@@ -1,6 +1,7 @@
 package com.du.dobab.controller;
 
 import com.du.dobab.dto.request.MealSave;
+import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
 import com.du.dobab.dto.response.MealResponse;
 import com.du.dobab.service.MealService;
@@ -29,7 +30,7 @@ public class MealApiController {
     }
 
     @GetMapping("/api/v1/meals")
-    public List<MealListResponse> list() {
-        return mealService.findAll();
+    public List<MealListResponse> list(@ModelAttribute MealSearch mealSearch) {
+        return mealService.findAll(mealSearch);
     }
 }

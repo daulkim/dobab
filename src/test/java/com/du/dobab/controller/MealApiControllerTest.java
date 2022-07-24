@@ -2,6 +2,7 @@ package com.du.dobab.controller;
 
 import com.du.dobab.domain.Meal;
 import com.du.dobab.dto.MealStatus;
+import com.du.dobab.dto.request.MealEdit;
 import com.du.dobab.dto.request.MealSave;
 import com.du.dobab.repository.MealRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,6 +33,8 @@ class MealApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MealRepository mealRepository;
@@ -53,7 +55,7 @@ class MealApiControllerTest {
                                     .startTime(LocalTime.now())
                                     .mealTime(0)
                                     .build();
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String requestJson = objectMapper.writeValueAsString(mealSave);
 
         mockMvc.perform(post("/api/v1/meals")
@@ -135,6 +137,35 @@ class MealApiControllerTest {
                 .andExpect(jsonPath("$.length()", Matchers.is(10)))
                 .andExpect(jsonPath("$[0].userId").value("user 29"))
                 .andExpect(jsonPath("$[9].userId").value("user 20"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("edit 요청 시 성공")
+    public void edit_succ() throws Exception {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+
+        mealRepository.save(meal);
+
+        MealEdit mealEdit = MealEdit.builder()
+                                    .title("edit title")
+                                    .contents("edit contents")
+                                    .build();
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+        mockMvc.perform(patch("/api/v1/meals/{mealId}", meal.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mealEdit))
+        )
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }

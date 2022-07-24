@@ -2,6 +2,7 @@ package com.du.dobab.service;
 
 import com.du.dobab.domain.Meal;
 import com.du.dobab.dto.MealStatus;
+import com.du.dobab.dto.request.MealEdit;
 import com.du.dobab.dto.request.MealSave;
 import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
@@ -103,6 +104,62 @@ class MealServiceTest {
         assertEquals(1, mealSearch.getPage());
         assertEquals(0, mealSearch.getOffset());
         assertEquals("user 29", pageOne.get(0).getUserId());
+
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    public void edit_succ() {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        MealEdit mealEdit = MealEdit.builder()
+                                    .title("edit title")
+                                    .contents("edit contents")
+                                    .build();
+        mealService.edit(meal.getId(), mealEdit);
+
+        Meal editedMeal = mealRepository.findById(meal.getId())
+                                        .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id: " + meal.getId()));
+
+        assertEquals("edit title", editedMeal.getTitle());
+        assertEquals("edit contents", editedMeal.getContents());
+
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    public void delete_succ() {
+
+        Meal meal = Meal.builder()
+                .userId("user")
+                .title("test title")
+                .contents("test contents")
+                .startTime(LocalTime.now())
+                .mealTime(2)
+                .status(MealStatus.OPEN)
+                .build();
+        mealRepository.save(meal);
+
+        MealEdit mealEdit = MealEdit.builder()
+                .title("edit title")
+                .contents("edit contents")
+                .build();
+        mealService.edit(meal.getId(), mealEdit);
+
+        Meal editedMeal = mealRepository.findById(meal.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id: " + meal.getId()));
+
+        assertEquals("edit title", editedMeal.getTitle());
+        assertEquals("edit contents", editedMeal.getContents());
 
     }
 }

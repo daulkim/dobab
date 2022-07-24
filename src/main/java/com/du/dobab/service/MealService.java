@@ -1,5 +1,7 @@
 package com.du.dobab.service;
 
+import com.du.dobab.domain.Meal;
+import com.du.dobab.dto.request.MealEdit;
 import com.du.dobab.dto.request.MealSave;
 import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
@@ -8,6 +10,7 @@ import com.du.dobab.repository.MealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +26,7 @@ public class MealService {
 
     public MealResponse findById(Long id) {
         return mealRepository.findById(id).map(MealResponse::new)
-                             .orElseThrow(() -> new IllegalArgumentException("존재하지않는 아이디입니다."));
+                             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
     }
 
     public List<MealListResponse> findAll(MealSearch mealSearch) {
@@ -31,5 +34,12 @@ public class MealService {
                             .stream()
                             .filter(m -> m.isOpened()).map(MealListResponse::new)
                             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void edit(Long id, MealEdit mealEdit) {
+        Meal meal = mealRepository.findById(id)
+                                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        meal.edit(mealEdit.getTitle(), mealEdit.getContents());
     }
 }

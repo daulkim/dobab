@@ -1,5 +1,6 @@
 package com.du.dobab.controller;
 
+import com.du.dobab.dto.request.MealEdit;
 import com.du.dobab.dto.request.MealSave;
 import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
@@ -32,5 +33,10 @@ public class MealApiController {
     @GetMapping("/api/v1/meals")
     public List<MealListResponse> list(@ModelAttribute MealSearch mealSearch) {
         return mealService.findAll(mealSearch);
+    }
+
+    @PatchMapping("/api/v1/meals/{mealId}")
+    public void edit(@PathVariable(name="mealId") Long id, @RequestBody @Valid MealEdit mealEdit) {
+        mealService.edit(id, mealEdit);
     }
 }

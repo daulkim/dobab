@@ -56,4 +56,9 @@ public class Meal {
     public boolean isOpened() {
         return this.status == MealStatus.OPEN;
     }
+
+    public void edit(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
+    }
 }

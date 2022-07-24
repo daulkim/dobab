@@ -1,9 +1,9 @@
 package com.du.dobab.controller;
 
 import com.du.dobab.domain.Meal;
-import com.du.dobab.repository.MealRepository;
 import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.MealSave;
+import com.du.dobab.repository.MealRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.Matchers;
@@ -17,8 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -114,38 +115,26 @@ class MealApiControllerTest {
     @Test
     @DisplayName("get all 요청 시 성공")
     public void list_succ() throws Exception {
-        LocalTime now = LocalTime.now();
 
-        Meal meal1 = Meal.builder()
-                        .userId("user1")
-                        .title("user1 test")
-                        .contents("user1 test contents")
-                        .startTime(now)
-                        .mealTime(3)
-                        .status(MealStatus.OPEN)
-                        .build();
-        Meal meal2 = Meal.builder()
-                        .userId("user2")
-                        .title("user2 test")
-                        .contents("user2 test contents")
-                        .startTime(now)
-                        .mealTime(2)
-                        .status(MealStatus.OPEN)
-                        .build();
+        List<Meal> meals = IntStream.range(0, 30)
+                                    .mapToObj(i -> Meal.builder()
+                                            .userId("user " + i)
+                                            .title("test title " + i)
+                                            .contents("test contents " +i)
+                                            .startTime(LocalTime.now())
+                                            .mealTime(2)
+                                            .status(MealStatus.OPEN)
+                                            .build())
+                                    .collect(Collectors.toList());
+        mealRepository.saveAll(meals);
 
-        mealRepository.saveAll(List.of(meal1, meal2));
-
-        mockMvc.perform(get("/api/v1/meals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        mockMvc.perform(get("/api/v1/meals?page=1&size=10")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", Matchers.is(2)))
-                .andExpect(jsonPath("$[0].userId").value("user1"))
-                .andExpect(jsonPath("$[0].title").value("user1 test"))
-                .andExpect(jsonPath("$[0].startTime").value(now.format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
-                .andExpect(jsonPath("$[1].userId").value("user2"))
-                .andExpect(jsonPath("$[1].title").value("user2 test"))
-                .andExpect(jsonPath("$[1].startTime").value(now.format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
+                .andExpect(jsonPath("$.length()", Matchers.is(10)))
+                .andExpect(jsonPath("$[0].userId").value("user 29"))
+                .andExpect(jsonPath("$[9].userId").value("user 20"))
                 .andDo(print());
     }
 }

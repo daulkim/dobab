@@ -1,11 +1,12 @@
 package com.du.dobab.service;
 
 import com.du.dobab.domain.Meal;
-import com.du.dobab.repository.MealRepository;
 import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.MealSave;
+import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
 import com.du.dobab.dto.response.MealResponse;
+import com.du.dobab.repository.MealRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,27 +80,29 @@ class MealServiceTest {
     }
 
     @Test
-    @DisplayName("글 전체 조회")
-    public void list_succ() {
-        Meal meal1 = Meal.builder()
-                        .userId("user1")
-                        .title("user1 test")
-                        .contents("user1 test contents")
-                        .startTime(LocalTime.now())
-                        .mealTime(3)
-                        .status(MealStatus.OPEN)
-                        .build();
-        Meal meal2 = Meal.builder()
-                        .userId("user2")
-                        .title("user2 test")
-                        .contents("user2 test contents")
-                        .startTime(LocalTime.now())
-                        .mealTime(2)
-                        .status(MealStatus.OPEN)
-                        .build();
-        mealRepository.saveAll(List.of(meal1, meal2));
+    @DisplayName("1 페이지 조회")
+    public void paging_list_succ() {
 
-        List<MealListResponse> all = mealService.findAll();
-        assertEquals(2, all.size());
+        List<Meal> meals = IntStream.range(0, 30)
+                                    .mapToObj(i -> Meal.builder()
+                                            .userId("user " + i)
+                                            .title("test title " + i)
+                                            .contents("test contents " +i)
+                                            .startTime(LocalTime.now())
+                                            .mealTime(2)
+                                            .status(MealStatus.OPEN)
+                                            .build())
+                                    .collect(Collectors.toList());
+        mealRepository.saveAll(meals);
+
+        MealSearch mealSearch = MealSearch.builder()
+                .build();
+        List<MealListResponse> pageOne = mealService.findAll(mealSearch);
+        assertEquals(10, pageOne.size());
+        assertEquals(10, mealSearch.getSize());
+        assertEquals(1, mealSearch.getPage());
+        assertEquals(0, mealSearch.getOffset());
+        assertEquals("user 29", pageOne.get(0).getUserId());
+
     }
 }

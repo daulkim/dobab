@@ -7,6 +7,7 @@ import com.du.dobab.dto.request.MealSave;
 import com.du.dobab.dto.request.MealSearch;
 import com.du.dobab.dto.response.MealListResponse;
 import com.du.dobab.dto.response.MealResponse;
+import com.du.dobab.exception.MealNotFound;
 import com.du.dobab.repository.MealRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class MealServiceTest {
@@ -58,7 +60,7 @@ class MealServiceTest {
     }
 
     @Test
-    @DisplayName("1건 조회")
+    @DisplayName("단건 조회")
     public void get_succ() {
         String userId = "user";
         String content = "test 글입니다.";
@@ -160,6 +162,50 @@ class MealServiceTest {
 
         assertEquals("edit title", editedMeal.getTitle());
         assertEquals("edit contents", editedMeal.getContents());
+
+    }
+
+    @Test
+    @DisplayName("단건 조회 - 글이 존재 하지 않는 경우")
+    public void get_exception() {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        assertThrows(MealNotFound.class, () -> {
+                        mealService.findById(meal.getId() + 1L);
+                    });
+    }
+
+    @Test
+    @DisplayName("글 수정 - 글이 존재 하지 않는 경우")
+    public void edit_exception() {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        MealEdit mealEdit = MealEdit.builder()
+                                    .title("edit title")
+                                    .contents("edit contents")
+                                    .build();
+
+        assertThrows(MealNotFound.class, () -> {
+                        mealService.edit(meal.getId() + 1L, mealEdit);
+                    });
 
     }
 }

@@ -131,8 +131,8 @@ class MealApiControllerTest {
         mealRepository.saveAll(meals);
 
         mockMvc.perform(get("/api/v1/meals?page=1&size=10")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", Matchers.is(10)))
                 .andExpect(jsonPath("$[0].userId").value("user 29"))
@@ -162,10 +162,59 @@ class MealApiControllerTest {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         mockMvc.perform(patch("/api/v1/meals/{mealId}", meal.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mealEdit))
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mealEdit))
+                )
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("get 요청 - 글이 존재하지 않는 경우")
+    public void get_exception() throws Exception {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        mockMvc.perform(get("/api/v1/meals/{mealId}", meal.getId() + 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("edit 요청 - 글이 존재하지 않는 경우")
+    public void edit_exception() throws Exception {
+
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startTime(LocalTime.now())
+                        .mealTime(2)
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        MealEdit mealEdit = MealEdit.builder()
+                                    .title("edit title")
+                                    .contents("edit contents")
+                                    .build();
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+        mockMvc.perform(patch("/api/v1/meals/{mealId}", meal.getId() + 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mealEdit))
+                )
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 }

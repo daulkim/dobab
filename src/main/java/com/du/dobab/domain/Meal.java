@@ -35,7 +35,8 @@ public class Meal {
     private int mealTime;
 
     @Column(name="STATUS")
-    private Enum status;
+    @Enumerated(value = EnumType.STRING)
+    private MealStatus status;
 
     @Embedded
     private Location location;
@@ -68,5 +69,10 @@ public class Meal {
     public void edit(String title, String contents) {
         this.title = title;
         this.contents = contents;
+    }
+
+    public void join(Party party) {
+        this.party = party;
+        this.status = MealStatus.FULL;
     }
 }

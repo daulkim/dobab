@@ -40,6 +40,14 @@ public class Meal {
     @Embedded
     private Location location;
 
+    @OneToOne
+    @JoinColumn(name = "party_id")
+    private Party party;
+
+    public Meal(Long id) {
+        this.id = id;
+    }
+
     @Builder
     public Meal(String userId, String title, String contents,
                 LocalTime startTime, int mealTime,

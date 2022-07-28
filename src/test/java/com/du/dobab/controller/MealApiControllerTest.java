@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -123,7 +124,7 @@ class MealApiControllerTest {
                                             .userId("user " + i)
                                             .title("test title " + i)
                                             .contents("test contents " +i)
-                                            .startTime(LocalTime.now())
+                                            .startDatetime(LocalDateTime.now())
                                             .mealTime(2)
                                             .status(MealStatus.OPEN)
                                             .build())
@@ -148,7 +149,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -177,7 +178,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -198,7 +199,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();

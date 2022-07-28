@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -28,8 +28,8 @@ public class Meal {
     @Column(name="CONTENTS")
     private String contents;
 
-    @Column(name="START_TIME")
-    private LocalTime startTime;
+    @Column(name="START_DATETIME")
+    private LocalDateTime startDatetime;
 
     @Column(name = "MEAL_TIME")
     private int mealTime;
@@ -51,12 +51,12 @@ public class Meal {
 
     @Builder
     public Meal(String userId, String title, String contents,
-                LocalTime startTime, int mealTime,
+                LocalDateTime startDatetime, int mealTime,
                 MealStatus status, Location location) {
         this.userId = userId;
         this.title = title;
         this.contents = contents;
-        this.startTime = startTime;
+        this.startDatetime = startDatetime;
         this.mealTime = mealTime;
         this.status = status;
         this.location = location;

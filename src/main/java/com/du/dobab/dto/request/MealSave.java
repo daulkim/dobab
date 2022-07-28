@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor
@@ -53,7 +55,7 @@ public class MealSave {
                     .title(title)
                     .contents(contents)
                     .location(location)
-                    .startTime(startTime)
+                    .startDatetime(startTime.atDate(LocalDate.now()))
                     .mealTime(mealTime)
                     .status(MealStatus.OPEN)
                     .build();

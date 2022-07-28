@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ class MealServiceTest {
                         .userId(userId)
                         .title("user test")
                         .contents(content)
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(3)
                         .status(MealStatus.OPEN)
                         .build();
@@ -91,7 +92,7 @@ class MealServiceTest {
                                             .userId("user " + i)
                                             .title("test title " + i)
                                             .contents("test contents " +i)
-                                            .startTime(LocalTime.now())
+                                            .startDatetime(LocalDateTime.now())
                                             .mealTime(2)
                                             .status(MealStatus.OPEN)
                                             .build())
@@ -117,7 +118,7 @@ class MealServiceTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -145,7 +146,7 @@ class MealServiceTest {
                 .userId("user")
                 .title("test title")
                 .contents("test contents")
-                .startTime(LocalTime.now())
+                .startDatetime(LocalDateTime.now())
                 .mealTime(2)
                 .status(MealStatus.OPEN)
                 .build();
@@ -173,7 +174,7 @@ class MealServiceTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -192,7 +193,7 @@ class MealServiceTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startTime(LocalTime.now())
+                        .startDatetime(LocalDateTime.now())
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();

@@ -22,6 +22,7 @@ public class MealApiController {
 
     @PostMapping("/api/v1/meals")
     public void registration(@RequestBody @Valid MealSave mealSave) {
+        mealSave.validTime();
         mealService.save(mealSave);
     }
 

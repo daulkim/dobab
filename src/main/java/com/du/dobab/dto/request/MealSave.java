@@ -12,7 +12,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor
@@ -59,5 +58,11 @@ public class MealSave {
                     .mealTime(mealTime)
                     .status(MealStatus.OPEN)
                     .build();
+    }
+
+    public void validTime() {
+        if(LocalTime.now().isAfter(startTime.minusMinutes(10))) {
+            throw new InvalidMealTimeException();
+        }
     }
 }

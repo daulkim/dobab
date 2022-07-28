@@ -2,6 +2,7 @@ package com.du.dobab.service;
 
 import com.du.dobab.domain.Meal;
 import com.du.dobab.domain.Party;
+import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.PartySave;
 import com.du.dobab.exception.PartyNotFound;
 import com.du.dobab.repository.MealRepository;
@@ -29,8 +30,8 @@ class PartyServiceTest {
 
     @AfterEach
     public void clean() {
-        partyRepository.deleteAll();
         mealRepository.deleteAll();
+        partyRepository.deleteAll();
     }
 
     @Test
@@ -38,6 +39,7 @@ class PartyServiceTest {
     public void save_succ() {
         Meal meal = mealRepository.save(Meal.builder()
                                             .userId("user1")
+                                            .status(MealStatus.OPEN)
                                             .build());
         PartySave partySave = PartySave.builder()
                                         .userId("user2")
@@ -55,6 +57,7 @@ class PartyServiceTest {
     public void delete_exception() {
         Meal meal = mealRepository.save(Meal.builder()
                                             .userId("user1")
+                                            .status(MealStatus.OPEN)
                                             .build());
         Party party = Party.builder()
                             .userId("user2")
@@ -72,6 +75,7 @@ class PartyServiceTest {
     public void delete_succ() {
         Meal meal = mealRepository.save(Meal.builder()
                                             .userId("user1")
+                                            .status(MealStatus.OPEN)
                                             .build());
         Party party = Party.builder()
                             .userId("user2")

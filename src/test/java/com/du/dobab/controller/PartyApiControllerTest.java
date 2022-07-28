@@ -2,6 +2,7 @@ package com.du.dobab.controller;
 
 import com.du.dobab.domain.Meal;
 import com.du.dobab.domain.Party;
+import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.PartySave;
 import com.du.dobab.repository.MealRepository;
 import com.du.dobab.repository.PartyRepository;
@@ -38,8 +39,8 @@ class PartyApiControllerTest {
 
     @AfterEach
     public void clean() {
-        partyRepository.deleteAll();
         mealRepository.deleteAll();
+        partyRepository.deleteAll();
     }
 
     @Test
@@ -48,6 +49,7 @@ class PartyApiControllerTest {
 
         Meal meal = mealRepository.save(Meal.builder()
                                     .userId("user1")
+                                    .status(MealStatus.OPEN)
                                     .build());
         PartySave partySave = PartySave.builder()
                                         .userId("user2")
@@ -69,6 +71,7 @@ class PartyApiControllerTest {
 
         Meal meal = mealRepository.save(Meal.builder()
                                             .userId("user1")
+                                            .status(MealStatus.OPEN)
                                             .build());
         Party party = Party.builder()
                             .userId("user2")
@@ -89,6 +92,7 @@ class PartyApiControllerTest {
 
         Meal meal = mealRepository.save(Meal.builder()
                                             .userId("user1")
+                                            .status(MealStatus.OPEN)
                                             .build());
         Party party = Party.builder()
                             .userId("user2")

@@ -1,8 +1,10 @@
 package com.du.dobab.dto.request;
 
+import com.du.dobab.common.exception.CustomValidation;
 import com.du.dobab.domain.Location;
 import com.du.dobab.domain.Meal;
 import com.du.dobab.dto.MealStatus;
+import com.du.dobab.exception.InvalidMealException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +35,7 @@ public class MealSave {
     @NotNull(message = "시작시간을 입력해주세요.")
     private LocalTime startTime;
 
-    @Min(value = 1, message = "소요시간은 한시간 보다 커야합니다.")
+    @Min(value = 1, message = "소요시간은 한시간 이상이어야 합니다.")
     private int mealTime;
 
     @Builder
@@ -55,14 +57,14 @@ public class MealSave {
                     .contents(contents)
                     .location(location)
                     .startDatetime(startTime.atDate(LocalDate.now()))
-                    .mealTime(mealTime)
+                    .endDatetime(startTime.atDate(LocalDate.now()).plusHours(mealTime))
                     .status(MealStatus.OPEN)
                     .build();
     }
 
     public void validTime() {
         if(LocalTime.now().isAfter(startTime.minusMinutes(10))) {
-            throw new InvalidMealTimeException();
+            throw new InvalidMealException(CustomValidation.INVALID_MEAL_TIME);
         }
     }
 }

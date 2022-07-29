@@ -8,4 +8,7 @@ import java.util.List;
 public interface MealRepositoryCustom {
 
     List<Meal> getList(MealSearch mealSearch);
+
+    int cntJoinMealByUserIdAndTime(String userId, Meal requestMeal);
+
 }

@@ -1,7 +1,9 @@
 package com.du.dobab.service;
 
+import com.du.dobab.common.exception.CustomValidation;
 import com.du.dobab.domain.Meal;
 import com.du.dobab.domain.Party;
+import com.du.dobab.exception.InvalidMealException;
 import com.du.dobab.dto.request.PartySave;
 import com.du.dobab.exception.MealNotFound;
 import com.du.dobab.exception.PartyNotFound;
@@ -23,16 +25,17 @@ public class PartyService {
 
     @Transactional
     public void save(PartySave partySave) {
-        Meal meal = mealRepository.findById(partySave.getMealId()).orElseThrow(MealNotFound::new);
-        boolean isOpenedMeal = meal.isOpened();
+        Meal requestMeal = mealRepository.findById(partySave.getMealId()).orElseThrow(MealNotFound::new);
+        boolean isOpenedMeal = requestMeal.isOpened();
+        boolean isAvailableTimeOfUser = mealRepository.cntJoinMealByUserIdAndTime(partySave.getUserId(), requestMeal) == 0;
 
-        if(isOpenedMeal) {
+        if(isOpenedMeal && isAvailableTimeOfUser) {
             log.info("party user: {}", partySave.getUserId());
             Party party = partyRepository.save(partySave.toEntity());
-            meal.join(party);
+            requestMeal.join(party);
         }
         else {
-            throw new AlreadyFull();
+            throw new InvalidMealException(CustomValidation.INVALID_MEAL_STATUS);
         }
     }
 

@@ -22,4 +22,13 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                 .orderBy(meal.id.desc())
                                 .fetch();
     }
+
+    @Override
+    public int cntJoinMealByUserIdAndTime(String userId, Meal requestMeal) {
+        return jpaQueryFactory.selectFrom(meal)
+                                .where(meal.party.userId.eq(userId),
+                                        meal.startDatetime.lt(requestMeal.getEndDatetime()),
+                                        meal.endDatetime.gt(requestMeal.getStartDatetime()))
+                                .fetch().size();
+    }
 }

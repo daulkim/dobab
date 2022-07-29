@@ -12,9 +12,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-#    properties:
-#      hibernate:
-#        format_sql: true
-#
-#logging.level:
-#    org.hibernate.SQL: trace
+    properties:
+      hibernate:
+        format_sql: true
+
+logging.level:
+    org.hibernate.SQL: trace

@@ -31,8 +31,8 @@ public class Meal {
     @Column(name="START_DATETIME")
     private LocalDateTime startDatetime;
 
-    @Column(name = "MEAL_TIME")
-    private int mealTime;
+    @Column(name="END_DATETIME")
+    private LocalDateTime endDatetime;
 
     @Column(name="STATUS")
     @Enumerated(value = EnumType.STRING)
@@ -51,13 +51,13 @@ public class Meal {
 
     @Builder
     public Meal(String userId, String title, String contents,
-                LocalDateTime startDatetime, int mealTime,
+                LocalDateTime startDatetime, LocalDateTime endDatetime,
                 MealStatus status, Location location) {
         this.userId = userId;
         this.title = title;
         this.contents = contents;
         this.startDatetime = startDatetime;
-        this.mealTime = mealTime;
+        this.endDatetime = endDatetime;
         this.status = status;
         this.location = location;
     }

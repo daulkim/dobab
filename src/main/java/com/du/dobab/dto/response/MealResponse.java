@@ -5,6 +5,7 @@ import com.du.dobab.domain.Meal;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 public class MealResponse {
@@ -19,7 +20,7 @@ public class MealResponse {
         this.userId = entity.getUserId();
         this.location = entity.getLocation();
         this.startDatetime = entity.getStartDatetime();
-        this.mealTime = entity.getMealTime();
+        this.mealTime = (int) ChronoUnit.HOURS.between(entity.getStartDatetime(), entity.getEndDatetime());
         this.contents = entity.getContents();
     }
 }

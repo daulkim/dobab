@@ -53,7 +53,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now())
+                                    .startTime(LocalTime.now().plusHours(1))
                                     .mealTime(0)
                                     .build();
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -78,7 +78,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now())
+                                    .startTime(LocalTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -100,7 +100,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now())
+                                    .startTime(LocalTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
         Meal savedMeal = mealRepository.save(mealSave.toEntity());
@@ -124,7 +124,7 @@ class MealApiControllerTest {
                                             .userId("user " + i)
                                             .title("test title " + i)
                                             .contents("test contents " +i)
-                                            .startDatetime(LocalDateTime.now())
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
                                             .mealTime(2)
                                             .status(MealStatus.OPEN)
                                             .build())
@@ -149,7 +149,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startDatetime(LocalDateTime.now())
+                        .startDatetime(LocalDateTime.now().plusHours(1))
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -178,7 +178,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startDatetime(LocalDateTime.now())
+                        .startDatetime(LocalDateTime.now().plusHours(1))
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -199,7 +199,7 @@ class MealApiControllerTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startDatetime(LocalDateTime.now())
+                        .startDatetime(LocalDateTime.now().plusHours(1))
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();
@@ -216,6 +216,31 @@ class MealApiControllerTest {
                         .content(objectMapper.writeValueAsString(mealEdit))
                 )
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @DisplayName("save 요청 - 잘못된 식사시간")
+    @Test
+    public void save_mealtime_exception() throws Exception {
+
+        MealSave mealSave = MealSave.builder()
+                                    .userId("user")
+                                    .title("user test")
+                                    .contents("테스트 글입니다.")
+                                    .startTime(LocalTime.now())
+                                    .mealTime(1)
+                                    .build();
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        String requestJson = objectMapper.writeValueAsString(mealSave);
+
+        mockMvc.perform(post("/api/v1/meals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 식사시간입니다."))
+                .andExpect(jsonPath("$.validation.startTime").value("400"))
                 .andDo(print());
     }
 }

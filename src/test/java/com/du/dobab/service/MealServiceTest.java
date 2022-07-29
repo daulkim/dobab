@@ -46,7 +46,7 @@ class MealServiceTest {
         MealSave mealSave = MealSave.builder()
                                     .userId(userId)
                                     .title("user test")
-                                    .startTime(LocalTime.now())
+                                    .startTime(LocalTime.now().plusHours(1))
                                     .mealTime(3)
                                     .contents(content)
                                     .build();
@@ -69,7 +69,7 @@ class MealServiceTest {
                         .userId(userId)
                         .title("user test")
                         .contents(content)
-                        .startDatetime(LocalDateTime.now())
+                        .startDatetime(LocalDateTime.now().plusHours(1))
                         .mealTime(3)
                         .status(MealStatus.OPEN)
                         .build();
@@ -92,7 +92,7 @@ class MealServiceTest {
                                             .userId("user " + i)
                                             .title("test title " + i)
                                             .contents("test contents " +i)
-                                            .startDatetime(LocalDateTime.now())
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
                                             .mealTime(2)
                                             .status(MealStatus.OPEN)
                                             .build())
@@ -193,7 +193,7 @@ class MealServiceTest {
                         .userId("user")
                         .title("test title")
                         .contents("test contents")
-                        .startDatetime(LocalDateTime.now())
+                        .startDatetime(LocalDateTime.now().plusHours(1))
                         .mealTime(2)
                         .status(MealStatus.OPEN)
                         .build();

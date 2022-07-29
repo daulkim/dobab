@@ -17,6 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,6 +52,8 @@ class PartyApiControllerTest {
 
         Meal meal = mealRepository.save(Meal.builder()
                                     .userId("user1")
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
+                                    .endDatetime(LocalDateTime.now().plusHours(2))
                                     .status(MealStatus.OPEN)
                                     .build());
         PartySave partySave = PartySave.builder()
@@ -102,6 +107,120 @@ class PartyApiControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/party/{partyId}", party.getId()))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("join 요청 시 실패 - 한 유저가 겹치는 식사시간의 식사 참여 요청")
+    public void join_fail() throws Exception {
+
+        Meal meal1 = mealRepository.save(Meal.builder()
+                                            .userId("user1")
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
+                                            .status(MealStatus.OPEN)
+                                            .build());
+
+        Meal meal2 = mealRepository.save(Meal.builder()
+                                            .userId("user2")
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
+                                            .status(MealStatus.OPEN)
+                                            .build());
+
+        Party party = Party.builder()
+                            .userId("user3")
+                            .meal(meal1)
+                            .build();
+        partyRepository.save(party);
+        meal1.join(party);
+
+        PartySave partySave = PartySave.builder()
+                                        .userId("user3")
+                                        .mealId(meal2.getId())
+                                        .build();
+
+        objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/v1/party")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partySave))
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.mealStatus").value("해당 식사는 참여할 수 없습니다."))
+                .andDo(print());
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("join 요청 시 성공 - 다른 유저가 겹치는 식사시간의 식사 참여 요청")
+    public void join_succ2() throws Exception {
+
+        Meal meal1 = mealRepository.save(Meal.builder()
+                                            .userId("user1")
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
+                                            .status(MealStatus.OPEN)
+                                            .build());
+
+        Meal meal2 = mealRepository.save(Meal.builder()
+                                    .userId("user2")
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
+                                    .endDatetime(LocalDateTime.now().plusHours(2))
+                                    .status(MealStatus.OPEN)
+                                    .build());
+
+        Party party = Party.builder()
+                            .userId("user3")
+                            .meal(meal1)
+                            .build();
+        partyRepository.save(party);
+        meal1.join(party);
+
+        PartySave partySave = PartySave.builder()
+                                        .userId("user4")
+                                        .mealId(meal2.getId())
+                                        .build();
+
+        objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/v1/party")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partySave))
+        )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("join 요청 시 실패 - 이미 참여가 완료된 요청")
+    public void join_fail2() throws Exception {
+
+        Meal meal = mealRepository.save(Meal.builder()
+                                            .userId("user1")
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
+                                            .status(MealStatus.FULL)
+                                            .build());
+
+        PartySave partySave = PartySave.builder()
+                                        .userId("user2")
+                                        .mealId(meal.getId())
+                                        .build();
+
+        objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/v1/party")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(partySave))
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.mealStatus").value("해당 식사는 참여할 수 없습니다."))
                 .andDo(print());
     }
 }

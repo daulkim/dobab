@@ -4,7 +4,7 @@ import com.du.dobab.common.exception.CustomValidation;
 
 public class InvalidMealException extends CustomException {
 
-    private static final String MESSAGE = "잘못된 식사 요청입니다.";
+    private static final String MESSAGE = "잘못된 요청입니다.";
 
     public InvalidMealException(CustomValidation customValidation) {
         super(MESSAGE);

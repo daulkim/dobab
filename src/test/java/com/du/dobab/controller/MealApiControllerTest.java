@@ -125,7 +125,7 @@ class MealApiControllerTest {
                                             .title("test title " + i)
                                             .contents("test contents " +i)
                                             .startDatetime(LocalDateTime.now().plusHours(1))
-                                            .mealTime(2)
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
                                             .status(MealStatus.OPEN)
                                             .build())
                                     .collect(Collectors.toList());
@@ -150,7 +150,7 @@ class MealApiControllerTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now().plusHours(1))
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
 
@@ -179,7 +179,7 @@ class MealApiControllerTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now().plusHours(1))
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);
@@ -200,7 +200,7 @@ class MealApiControllerTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now().plusHours(1))
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);
@@ -239,8 +239,8 @@ class MealApiControllerTest {
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("잘못된 식사시간입니다."))
-                .andExpect(jsonPath("$.validation.startTime").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 식사 요청입니다."))
+                .andExpect(jsonPath("$.validation.startTime").value("식사 시작시간이 10분 보다 적게 남았습니다."))
                 .andDo(print());
     }
 }

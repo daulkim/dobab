@@ -56,7 +56,6 @@ class MealServiceTest {
         Meal savedMeal = mealRepository.findAll().get(0);
         assertEquals(1L, mealRepository.count());
         assertEquals(savedMeal.getUserId(), userId);
-        assertEquals(savedMeal.getMealTime(), 3);
         assertEquals(savedMeal.getContents(), content);
     }
 
@@ -70,7 +69,7 @@ class MealServiceTest {
                         .title("user test")
                         .contents(content)
                         .startDatetime(LocalDateTime.now().plusHours(1))
-                        .mealTime(3)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);
@@ -79,7 +78,7 @@ class MealServiceTest {
 
         assertEquals(1L, mealRepository.count());
         assertEquals(savedMeal.getUserId(), userId);
-        assertEquals(savedMeal.getMealTime(), 3);
+        assertEquals(savedMeal.getMealTime(), 1);
         assertEquals(savedMeal.getContents(), content);
     }
 
@@ -93,7 +92,7 @@ class MealServiceTest {
                                             .title("test title " + i)
                                             .contents("test contents " +i)
                                             .startDatetime(LocalDateTime.now().plusHours(1))
-                                            .mealTime(2)
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
                                             .status(MealStatus.OPEN)
                                             .build())
                                     .collect(Collectors.toList());
@@ -119,7 +118,7 @@ class MealServiceTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now())
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);
@@ -147,7 +146,7 @@ class MealServiceTest {
                 .title("test title")
                 .contents("test contents")
                 .startDatetime(LocalDateTime.now())
-                .mealTime(2)
+                .endDatetime(LocalDateTime.now().plusHours(2))
                 .status(MealStatus.OPEN)
                 .build();
         mealRepository.save(meal);
@@ -175,7 +174,7 @@ class MealServiceTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now())
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);
@@ -194,7 +193,7 @@ class MealServiceTest {
                         .title("test title")
                         .contents("test contents")
                         .startDatetime(LocalDateTime.now().plusHours(1))
-                        .mealTime(2)
+                        .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
         mealRepository.save(meal);

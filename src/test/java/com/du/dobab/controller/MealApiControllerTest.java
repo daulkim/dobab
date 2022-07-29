@@ -239,7 +239,7 @@ class MealApiControllerTest {
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("잘못된 식사 요청입니다."))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andExpect(jsonPath("$.validation.startTime").value("식사 시작시간이 10분 보다 적게 남았습니다."))
                 .andDo(print());
     }

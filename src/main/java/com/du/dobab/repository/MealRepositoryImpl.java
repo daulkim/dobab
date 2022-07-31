@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static com.du.dobab.domain.QMeal.meal;
+import static com.du.dobab.domain.QParty.party;
 
 @RequiredArgsConstructor
-public class MealRepositoryImpl implements MealRepositoryCustom {
+public class MealRepositoryImpl implements MealRepositoryCustom
+{
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -25,10 +27,14 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
 
     @Override
     public int cntJoinMealByUserIdAndTime(String userId, Meal requestMeal) {
-        return jpaQueryFactory.selectFrom(meal)
-                                .where(meal.party.userId.eq(userId),
+
+        return jpaQueryFactory.select(meal.id)
+                                .from(meal)
+                                .leftJoin((meal.party), party)
+                                .where(meal.userId.eq(userId).or(party.userId.eq(userId)),
                                         meal.startDatetime.lt(requestMeal.getEndDatetime()),
-                                        meal.endDatetime.gt(requestMeal.getStartDatetime()))
+                                        meal.endDatetime.gt(requestMeal.getStartDatetime())
+                                )
                                 .fetch().size();
     }
 }

@@ -28,14 +28,13 @@ public class PartyService {
         Meal requestMeal = mealRepository.findById(partySave.getMealId()).orElseThrow(MealNotFound::new);
         boolean isOpenedMeal = requestMeal.isOpened();
         boolean isAvailableTimeOfUser = mealRepository.cntJoinMealByUserIdAndTime(partySave.getUserId(), requestMeal) == 0;
-
+        log.info("isAvailableTimeOfUser: {}", isAvailableTimeOfUser);
         if(isOpenedMeal && isAvailableTimeOfUser) {
-            log.info("party user: {}", partySave.getUserId());
             Party party = partyRepository.save(partySave.toEntity());
             requestMeal.join(party);
         }
         else {
-            throw new InvalidMealException(CustomValidation.INVALID_MEAL_STATUS);
+            throw new InvalidMealException(CustomValidation.INVALID_JOIN_STATUS);
         }
     }
 

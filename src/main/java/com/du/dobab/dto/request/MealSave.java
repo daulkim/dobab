@@ -35,7 +35,7 @@ public class MealSave {
     @NotNull(message = "시작시간을 입력해주세요.")
     private LocalTime startTime;
 
-    @Min(value = 1, message = "소요시간은 한시간 이상이어야 합니다.")
+    @Min(value = 1, message = "소요시간은 한 시간 이상이어야 합니다.")
     private int mealTime;
 
     @Builder

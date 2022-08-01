@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class PartyServiceTest {
@@ -58,6 +60,7 @@ class PartyServiceTest {
         assertEquals(savedParty.getUserId(), "user2");
     }
 
+    @Transactional
     @Test
     @DisplayName("party 삭제 실패")
     public void delete_exception() {
@@ -70,12 +73,14 @@ class PartyServiceTest {
                             .meal(meal)
                             .build();
         partyRepository.save(party);
+        meal.join(party);
 
         Assertions.assertThrows(PartyNotFound.class, () -> {
             partyService.delete(party.getId()+1L);
         });
     }
 
+    @Transactional
     @Test
     @DisplayName("party 삭제 성공")
     public void delete_succ() {
@@ -88,10 +93,13 @@ class PartyServiceTest {
                             .meal(meal)
                             .build();
         partyRepository.save(party);
+        meal.join(party);
+
         partyService.delete(party.getId());
 
         int size = partyRepository.findAll().size();
-        Assertions.assertEquals(0, size);
+        assertEquals(0, size);
+        assertEquals(null, meal.getParty());
     }
 
     @Test
@@ -201,5 +209,58 @@ class PartyServiceTest {
 
         List<Party> all = partyRepository.findAll();
         assertEquals(2, all.size());
+    }
+
+    @Test
+    @DisplayName("party 등록 실패 - 한 유저가 등록한 식사와 겹치는 시간의 식사 참여 요청")
+    public void save_fail3() {
+        mealRepository.save(Meal.builder()
+                                .userId("user1")
+                                .startDatetime(LocalDateTime.now().plusHours(1))
+                                .endDatetime(LocalDateTime.now().plusHours(5))
+                                .status(MealStatus.OPEN)
+                                .build());
+        Meal meal = mealRepository.save(Meal.builder()
+                                            .userId("user2")
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(3))
+                                            .status(MealStatus.OPEN)
+                                            .build());
+        PartySave partySave1 = PartySave.builder()
+                                        .userId("user1")
+                                        .mealId(meal.getId())
+                                        .build();
+
+        assertThrows(InvalidMealException.class, () -> {
+            partyService.save(partySave1);
+        });
+    }
+
+    @Test
+    @DisplayName("party 등록 성공 - 한 유저가 등록한 식사와 겹치는 않는 시간의 식사 참여 요청")
+    public void save_succ4() {
+        mealRepository.save(Meal.builder()
+                                .userId("user1")
+                                .startDatetime(LocalDateTime.now().plusHours(1))
+                                .endDatetime(LocalDateTime.now().plusHours(2))
+                                .status(MealStatus.OPEN)
+                                .build());
+        Meal meal = mealRepository.save(Meal.builder()
+                                            .userId("user2")
+                                            .startDatetime(LocalDateTime.now().plusHours(2))
+                                            .endDatetime(LocalDateTime.now().plusHours(3))
+                                            .status(MealStatus.OPEN)
+                                            .build());
+        PartySave partySave1 = PartySave.builder()
+                                        .userId("user1")
+                                        .mealId(meal.getId())
+                                        .build();
+
+        partyService.save(partySave1);
+        List<Party> allParty = partyRepository.findAll();
+        List<Meal> allMeal = mealRepository.findAll();
+        assertEquals(1, allParty.size());
+        assertEquals("user1", allParty.get(0).getUserId());
+        assertEquals("user1", allMeal.get(1).getParty().getUserId());
     }
 }

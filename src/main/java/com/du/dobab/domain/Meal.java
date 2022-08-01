@@ -72,7 +72,16 @@ public class Meal {
     }
 
     public void join(Party party) {
-        this.party = party;
+        this.setParty(party);
         this.status = MealStatus.FULL;
+    }
+
+    public void setParty(Party party) {
+        this.party = party;
+        this.party.setMeal(this);
+    }
+
+    public void leave() {
+        this.party = null;
     }
 }

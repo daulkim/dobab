@@ -27,4 +27,8 @@ public class Party {
         this.userId = userId;
         this.meal = meal;
     }
+
+    public void setMeal(Meal meal) {
+        this.meal = meal;
+    }
 }

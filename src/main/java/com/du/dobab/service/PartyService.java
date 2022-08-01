@@ -28,7 +28,6 @@ public class PartyService {
         Meal requestMeal = mealRepository.findById(partySave.getMealId()).orElseThrow(MealNotFound::new);
         boolean isOpenedMeal = requestMeal.isOpened();
         boolean isAvailableTimeOfUser = mealRepository.cntJoinMealByUserIdAndTime(partySave.getUserId(), requestMeal) == 0;
-        log.info("isAvailableTimeOfUser: {}", isAvailableTimeOfUser);
         if(isOpenedMeal && isAvailableTimeOfUser) {
             Party party = partyRepository.save(partySave.toEntity());
             requestMeal.join(party);
@@ -40,6 +39,8 @@ public class PartyService {
 
     public void delete(Long id) {
         Party savedParty = partyRepository.findById(id).orElseThrow(PartyNotFound::new);
+        Meal savedMeal = mealRepository.findByPartyId(savedParty.getId()).orElseThrow(MealNotFound::new);
+        savedMeal.leave();
         partyRepository.deleteById(savedParty.getId());
     }
 }

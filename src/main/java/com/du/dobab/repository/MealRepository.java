@@ -14,4 +14,5 @@ public interface MealRepository extends JpaRepository<Meal, Long>, MealRepositor
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="3000")})
     Optional<Meal> findById(Long id);
+    Optional<Meal> findByPartyId(Long partyId);
 }

@@ -41,7 +41,7 @@ public class Meal {
     @Embedded
     private Location location;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "party_id")
     private Party party;
 

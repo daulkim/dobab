@@ -29,7 +29,7 @@ public class PartyService {
         boolean isOpenedMeal = requestMeal.isOpened();
         boolean isAvailableTimeOfUser = mealRepository.cntJoinMealByUserIdAndTime(partySave.getUserId(), requestMeal) == 0;
         if(isOpenedMeal && isAvailableTimeOfUser) {
-            Party party = partyRepository.save(partySave.toEntity());
+            Party party = partySave.toEntity(requestMeal);
             requestMeal.join(party);
         }
         else {
@@ -37,10 +37,10 @@ public class PartyService {
         }
     }
 
+    @Transactional
     public void delete(Long id) {
         Party savedParty = partyRepository.findById(id).orElseThrow(PartyNotFound::new);
         Meal savedMeal = mealRepository.findByPartyId(savedParty.getId()).orElseThrow(MealNotFound::new);
         savedMeal.leave();
-        partyRepository.deleteById(savedParty.getId());
     }
 }

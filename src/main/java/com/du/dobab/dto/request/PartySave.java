@@ -17,10 +17,10 @@ public class PartySave {
         this.mealId = mealId;
     }
 
-    public Party toEntity() {
+    public Party toEntity(Meal meal ) {
         return Party.builder()
                     .userId(userId)
-                    .meal(new Meal(mealId))
+                    .meal(meal)
                     .build();
     }
 }

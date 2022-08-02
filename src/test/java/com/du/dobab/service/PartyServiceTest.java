@@ -57,7 +57,9 @@ class PartyServiceTest {
 
         Party savedParty = partyRepository.findAll().get(0);
         assertEquals(1L, mealRepository.count());
-        assertEquals(savedParty.getUserId(), "user2");
+        assertEquals(1L, partyRepository.count());
+        assertEquals(meal.getUserId(), savedParty.getMeal().getUserId());
+        assertEquals("user2", savedParty.getUserId());
     }
 
     @Transactional
@@ -72,11 +74,13 @@ class PartyServiceTest {
                             .userId("user2")
                             .meal(meal)
                             .build();
-        partyRepository.save(party);
+
         meal.join(party);
 
+        long partyId = partyRepository.findAll().get(0).getId();
+
         Assertions.assertThrows(PartyNotFound.class, () -> {
-            partyService.delete(party.getId()+1L);
+            partyService.delete(partyId + 1L);
         });
     }
 
@@ -92,10 +96,9 @@ class PartyServiceTest {
                             .userId("user2")
                             .meal(meal)
                             .build();
-        partyRepository.save(party);
-        meal.join(party);
 
-        partyService.delete(party.getId());
+        meal.join(party);
+        partyService.delete(partyRepository.findAll().get(0).getId());
 
         int size = partyRepository.findAll().size();
         assertEquals(0, size);
@@ -236,6 +239,7 @@ class PartyServiceTest {
         });
     }
 
+    @Transactional
     @Test
     @DisplayName("party 등록 성공 - 한 유저가 등록한 식사와 겹치는 않는 시간의 식사 참여 요청")
     public void save_succ4() {

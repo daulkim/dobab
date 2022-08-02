@@ -117,6 +117,7 @@ class MealServiceTest {
 
     }
 
+    @Transactional
     @Test
     @DisplayName("글 수정")
     public void edit_succ() {
@@ -146,34 +147,6 @@ class MealServiceTest {
     }
 
     @Test
-    @DisplayName("글 삭제")
-    public void delete_succ() {
-
-        Meal meal = Meal.builder()
-                .userId("user")
-                .title("test title")
-                .contents("test contents")
-                .startDatetime(LocalDateTime.now())
-                .endDatetime(LocalDateTime.now().plusHours(2))
-                .status(MealStatus.OPEN)
-                .build();
-        mealRepository.save(meal);
-
-        MealEdit mealEdit = MealEdit.builder()
-                .title("edit title")
-                .contents("edit contents")
-                .build();
-        mealService.edit(meal.getId(), mealEdit);
-
-        Meal editedMeal = mealRepository.findById(meal.getId())
-                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id: " + meal.getId()));
-
-        assertEquals("edit title", editedMeal.getTitle());
-        assertEquals("edit contents", editedMeal.getContents());
-
-    }
-
-    @Test
     @DisplayName("단건 조회 - 글이 존재 하지 않는 경우")
     public void get_exception() {
 
@@ -193,7 +166,7 @@ class MealServiceTest {
     }
 
     @Test
-    @DisplayName("글 수정 - 글이 존재 하지 않는 경우")
+    @DisplayName("글 수정 실패 - 글이 존재 하지 않는 경우")
     public void edit_exception() {
 
         Meal meal = Meal.builder()

@@ -83,10 +83,10 @@ class PartyApiControllerTest {
                             .userId("user2")
                             .meal(meal)
                             .build();
-        partyRepository.save(party);
         meal.join(party);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/party/{partyId}", party.getId()+1L))
+        long partyId = partyRepository.findAll().get(0).getId();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/party/{partyId}", partyId + 1L))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value("참여 정보가 존재하지 않습니다."))
@@ -106,10 +106,10 @@ class PartyApiControllerTest {
                             .userId("user2")
                             .meal(meal)
                             .build();
-        partyRepository.save(party);
         meal.join(party);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/party/{partyId}", party.getId()))
+        long partyId = partyRepository.findAll().get(0).getId();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/party/{partyId}", partyId))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -137,7 +137,6 @@ class PartyApiControllerTest {
                             .userId("user3")
                             .meal(meal1)
                             .build();
-        partyRepository.save(party);
         meal1.join(party);
 
         PartySave partySave = PartySave.builder()
@@ -181,7 +180,6 @@ class PartyApiControllerTest {
                             .userId("user3")
                             .meal(meal1)
                             .build();
-        partyRepository.save(party);
         meal1.join(party);
 
         PartySave partySave = PartySave.builder()

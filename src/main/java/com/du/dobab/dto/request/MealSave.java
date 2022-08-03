@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -31,9 +30,9 @@ public class MealSave {
 
     private Location location;
 
-    @JsonFormat(pattern="HH:mm")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm")
     @NotNull(message = "시작시간을 입력해주세요.")
-    private LocalTime startTime;
+    private LocalDateTime startDatetime;
 
     @Min(value = 1, message = "소요시간은 한 시간 이상이어야 합니다.")
     private int mealTime;
@@ -41,12 +40,12 @@ public class MealSave {
     @Builder
     public MealSave(String userId, String title,
                     String contents, Location location,
-                    LocalTime startTime, int mealTime) {
+                    LocalDateTime startDatetime, int mealTime) {
         this.userId = userId;
         this.title = title;
         this.contents = contents;
         this.location = location;
-        this.startTime = startTime;
+        this.startDatetime = startDatetime;
         this.mealTime = mealTime;
     }
 
@@ -56,14 +55,14 @@ public class MealSave {
                     .title(title)
                     .contents(contents)
                     .location(location)
-                    .startDatetime(startTime.atDate(LocalDate.now()))
-                    .endDatetime(startTime.atDate(LocalDate.now()).plusHours(mealTime))
+                    .startDatetime(startDatetime)
+                    .endDatetime(startDatetime.plusHours(mealTime))
                     .status(MealStatus.OPEN)
                     .build();
     }
 
     public void validTime() {
-        if(LocalTime.now().isAfter(startTime.minusMinutes(10))) {
+        if(LocalDateTime.now().isAfter(startDatetime.minusMinutes(10))) {
             throw new InvalidMealException(CustomValidation.INVALID_MEAL_TIME);
         }
     }

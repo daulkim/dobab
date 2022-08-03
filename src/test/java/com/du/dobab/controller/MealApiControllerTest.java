@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +60,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(0)
                                     .build();
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -86,7 +85,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -108,7 +107,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
         Meal savedMeal = mealRepository.save(mealSave.toEntity());
@@ -235,7 +234,7 @@ class MealApiControllerTest {
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now())
+                                    .startDatetime(LocalDateTime.now())
                                     .mealTime(1)
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -277,7 +276,7 @@ class MealApiControllerTest {
                                     .userId("user2")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -319,7 +318,7 @@ class MealApiControllerTest {
                                     .userId("user2")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(2))
+                                    .startDatetime(LocalDateTime.now().plusHours(2))
                                     .mealTime(1)
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());

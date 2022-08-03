@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -266,5 +267,11 @@ class PartyServiceTest {
         assertEquals(1, allParty.size());
         assertEquals("user1", allParty.get(0).getUserId());
         assertEquals("user1", allMeal.get(1).getParty().getUserId());
+    }
+
+    @Test
+    public void temp_test() {
+        System.out.println(LocalDateTime.of(2022, 8,4, 00,00).minusMinutes(10));
+        System.out.println(LocalTime.of(00,8).isAfter(LocalTime.of(00,8).minusMinutes(10)));
     }
 }

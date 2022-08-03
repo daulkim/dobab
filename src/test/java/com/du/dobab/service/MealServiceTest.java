@@ -20,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -54,7 +53,7 @@ class MealServiceTest {
         MealSave mealSave = MealSave.builder()
                                     .userId(userId)
                                     .title("user test")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(3)
                                     .contents(content)
                                     .build();
@@ -107,7 +106,7 @@ class MealServiceTest {
         mealRepository.saveAll(meals);
 
         MealSearch mealSearch = MealSearch.builder()
-                .build();
+                                            .build();
         List<MealListResponse> pageOne = mealService.findAll(mealSearch);
         assertEquals(10, pageOne.size());
         assertEquals(10, mealSearch.getSize());
@@ -215,7 +214,7 @@ class MealServiceTest {
                                     .userId("user2")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(1))
+                                    .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
                                     .build();
 
@@ -249,7 +248,7 @@ class MealServiceTest {
                                     .userId("user2")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
-                                    .startTime(LocalTime.now().plusHours(2))
+                                    .startDatetime(LocalDateTime.now().plusHours(2))
                                     .mealTime(1)
                                     .build();
 

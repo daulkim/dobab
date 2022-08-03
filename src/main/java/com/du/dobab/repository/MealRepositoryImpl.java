@@ -1,6 +1,7 @@
 package com.du.dobab.repository;
 
 import com.du.dobab.domain.Meal;
+import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.MealSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +12,14 @@ import static com.du.dobab.domain.QMeal.meal;
 import static com.du.dobab.domain.QParty.party;
 
 @RequiredArgsConstructor
-public class MealRepositoryImpl implements MealRepositoryCustom
-{
+public class MealRepositoryImpl implements MealRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Meal> getList(MealSearch mealSearch) {
+    public List<Meal> getOpenList(MealSearch mealSearch) {
         return jpaQueryFactory.selectFrom(meal)
+                                .where(meal.status.eq(MealStatus.OPEN))
                                 .limit(mealSearch.getSize())
                                 .offset(mealSearch.getOffset())
                                 .orderBy(meal.id.desc())

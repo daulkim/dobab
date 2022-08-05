@@ -3,8 +3,10 @@ package com.du.dobab.repository;
 import com.du.dobab.domain.Meal;
 import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.MealSearch;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -37,5 +39,20 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                         meal.endDatetime.gt(requestMeal.getStartDatetime())
                                 )
                                 .fetch().size();
+    }
+
+    @Override
+    public List<Meal> getMyList(int size, int page, String type, String userId) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if(StringUtils.equals(type, "meal")) booleanBuilder.and(meal.userId.eq(userId));
+        if(StringUtils.equals(type, "party")) booleanBuilder.and(party.userId.eq(userId));
+        if(StringUtils.equals(type, "all")) booleanBuilder.and(meal.userId.eq(userId).or(party.userId.eq(userId)));
+        return jpaQueryFactory.selectFrom(meal)
+                                .leftJoin((meal.party), party)
+                                .where(booleanBuilder)
+                                .limit(size)
+                                .offset((page-1)*size)
+                                .orderBy(meal.startDatetime.desc())
+                                .fetch();
     }
 }

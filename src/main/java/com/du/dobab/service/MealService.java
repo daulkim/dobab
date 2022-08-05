@@ -12,7 +12,6 @@ import com.du.dobab.exception.MealNotFound;
 import com.du.dobab.repository.MealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -54,4 +53,12 @@ public class MealService {
                                     .orElseThrow(MealNotFound::new);
         meal.edit(mealEdit.getTitle(), mealEdit.getContents());
     }
+
+    public List<MealListResponse> findByUserId(int size, int page, String type, String userId) {
+        return mealRepository.getMyList(size, page, type, userId)
+                            .stream()
+                            .map(MealListResponse::new)
+                            .collect(Collectors.toList());
+    }
+
 }

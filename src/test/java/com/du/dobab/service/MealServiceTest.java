@@ -257,6 +257,83 @@ class MealServiceTest {
         assertEquals(2, all.size());
         assertEquals("user2", all.get(1).getUserId());
         assertEquals("user2", all.get(0).getParty().getUserId());
+    }
 
+    @Test
+    @DisplayName("유저의 식사 제안리스트 조회 성공")
+    public void findByUserId_meal() {
+        List<Meal> meals = IntStream.range(0, 30)
+                                    .mapToObj(i -> Meal.builder()
+                                            .userId("user" + i%2)
+                                            .title("test title " + i)
+                                            .contents("test contents " +i)
+                                            .startDatetime(LocalDateTime.now().plusHours(1))
+                                            .endDatetime(LocalDateTime.now().plusHours(2))
+                                            .status(MealStatus.OPEN)
+                                            .build())
+                                    .collect(Collectors.toList());
+        mealRepository.saveAll(meals);
+
+        List<MealListResponse> pageOne = mealService.findByUserId(10, 1, "meal", "user1");
+
+        assertEquals(10, pageOne.size());
+        assertEquals("user1", pageOne.get(0).getUserId());
+        assertEquals("user1", pageOne.get(9).getUserId());
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("유저의 식사 참여리스트 조회 성공")
+    public void findByUserId_party() {
+        List<Meal> meals = IntStream.range(0, 30)
+                                    .mapToObj(i -> Meal.builder()
+                                            .userId("user" + i)
+                                            .title("test title " + i)
+                                            .contents("test contents " +i)
+                                            .startDatetime(LocalDateTime.now().plusHours(i))
+                                            .endDatetime(LocalDateTime.now().plusHours(i+1))
+                                            .status(MealStatus.OPEN)
+                                            .build())
+                                    .collect(Collectors.toList());
+        mealRepository.saveAll(meals);
+        meals.forEach(m -> {m.setParty(Party.builder()
+                                            .userId("party user")
+                                            .meal(m)
+                                            .build());}
+                );
+
+        List<MealListResponse> pageOne = mealService.findByUserId(10, 1, "party", "party user");
+
+        assertEquals(10, pageOne.size());
+        assertEquals("user29", pageOne.get(0).getUserId());
+        assertEquals("user28", pageOne.get(1).getUserId());
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("유저의 제안 및 참여한 식사리스트 조회 성공")
+    public void findByUserId_meal_and_party() {
+        List<Meal> meals = IntStream.range(0, 30)
+                                    .mapToObj(i -> Meal.builder()
+                                            .userId("user" + i%3)
+                                            .title("test title " + i)
+                                            .contents("test contents " +i)
+                                            .startDatetime(LocalDateTime.now().plusHours(i))
+                                            .endDatetime(LocalDateTime.now().plusHours(i+1))
+                                            .status(MealStatus.OPEN)
+                                            .build())
+                                    .collect(Collectors.toList());
+        mealRepository.saveAll(meals);
+        meals.forEach(m -> {m.setParty(Party.builder()
+                            .userId(m.getUserId().equals("user0")?"user1":"user0")
+                            .meal(m)
+                            .build());}
+                );
+
+        List<MealListResponse> pageOne = mealService.findByUserId(10, 1, "all", "user1");
+
+        assertEquals(10, pageOne.size());
+        assertEquals("user1", pageOne.get(0).getUserId());
+        assertEquals("user0", pageOne.get(1).getUserId());
     }
 }

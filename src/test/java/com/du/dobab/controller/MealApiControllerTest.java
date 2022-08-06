@@ -241,9 +241,9 @@ class MealApiControllerTest {
         String requestJson = objectMapper.writeValueAsString(mealSave);
 
         mockMvc.perform(post("/api/v1/meals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson)
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
@@ -296,7 +296,7 @@ class MealApiControllerTest {
     @Transactional
     @DisplayName("save 요청 성공- 한 유저가 참여한 식사와 겹치지 않는 시간의 식사 등록 요청")
     @Test
-    public void save_succ2() throws Exception {
+    public void my_meal_list_succ() throws Exception {
 
         Meal meal = Meal.builder()
                         .userId("user1")

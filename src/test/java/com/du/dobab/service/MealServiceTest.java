@@ -336,4 +336,63 @@ class MealServiceTest {
         assertEquals("user1", pageOne.get(0).getUserId());
         assertEquals("user0", pageOne.get(1).getUserId());
     }
+
+    @Transactional
+    @Test
+    @DisplayName("식사 제안 삭제요청 실패 - 존재하지 않는 식사 제안")
+    public void delete_fail() {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        assertThrows(MealNotFound.class, () -> {
+            mealService.delete(meal.getId() + 1L);
+        });
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("식사 제안 삭제요청 실패 - 삭제할 수 없는 식사 상태")
+    public void delete_fail2() {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.FULL)
+                        .build();
+        mealRepository.save(meal);
+
+        assertThrows(InvalidMealException.class, () -> {
+            mealService.delete(meal.getId());
+        });
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("식사 제안 삭제요청 성공")
+    public void delete_succ() {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        mealService.delete(meal.getId());
+
+        List<Meal> all = mealRepository.findAll();
+        assertEquals(1, all.size());
+        assertEquals(MealStatus.DELETE, all.get(0).getStatus());
+    }
 }

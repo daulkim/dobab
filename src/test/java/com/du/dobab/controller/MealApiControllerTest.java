@@ -283,14 +283,14 @@ class MealApiControllerTest {
         String requestJson = objectMapper.writeValueAsString(mealSave);
 
         mockMvc.perform(post("/api/v1/meals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson)
-        )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.validation.mealTime").value("해당 식사를 등록할 수 없습니다."))
-                .andDo(print());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+                )
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.code").value("400"))
+                        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                        .andExpect(jsonPath("$.validation.mealTime").value("해당 식사를 등록할 수 없습니다."))
+                        .andDo(print());
     }
 
     @Transactional
@@ -325,10 +325,69 @@ class MealApiControllerTest {
         String requestJson = objectMapper.writeValueAsString(mealSave);
 
         mockMvc.perform(post("/api/v1/meals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson)
-        )
-                .andExpect(status().isOk())
-                .andDo(print());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+                )
+                        .andExpect(status().isOk())
+                        .andDo(print());
+    }
+
+    @Test
+    @DisplayName("식사 제안 삭제요청 실패 - 존재하지 않는 식사 제안")
+    public void delete_fail() throws Exception {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId() + 1L))
+                        .andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.code").value("404"))
+                        .andExpect(jsonPath("$.message").value("존재하지 않는 글입니다."))
+                        .andDo(print());
+    }
+
+    @Test
+    @DisplayName("식사 제안 삭제요청 실패 - 삭제할 수 없는 식사 상태")
+    public void delete_fail2() throws Exception {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.FULL)
+                        .build();
+        mealRepository.save(meal);
+
+        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId()))
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.code").value("400"))
+                        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                        .andExpect(jsonPath("$.validation.mealDeleteStatus").value("해당 식사는 삭제할 수 없는 상태 입니다."))
+                        .andDo(print());
+    }
+
+    @Test
+    @DisplayName("식사 제안 삭제요청 성공")
+    public void delete_succ() throws Exception {
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("test contents")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.OPEN)
+                        .build();
+        mealRepository.save(meal);
+
+        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId()))
+                        .andExpect(status().isOk())
+                        .andDo(print());
     }
 }

@@ -1,5 +1,5 @@
 package com.du.dobab.dto;
 
 public enum MealStatus {
-    OPEN, FULL, TIMEOUT
+    OPEN, FULL, TIMEOUT, DELETE;
 }

@@ -40,4 +40,9 @@ public class MealApiController {
     public void edit(@PathVariable(name="mealId") Long id, @RequestBody @Valid MealEdit mealEdit) {
         mealService.edit(id, mealEdit);
     }
+
+    @PatchMapping("/api/v1/meals/{mealId}/delete")
+    public void delete(@PathVariable(name="mealId") Long id) {
+        mealService.delete(id);
+    }
 }

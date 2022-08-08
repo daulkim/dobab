@@ -84,4 +84,8 @@ public class Meal {
     public void leave() {
         this.party = null;
     }
+
+    public void delete() {
+        this.status = MealStatus.DELETE;
+    }
 }

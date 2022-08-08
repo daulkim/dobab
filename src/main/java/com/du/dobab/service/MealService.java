@@ -61,4 +61,15 @@ public class MealService {
                             .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void delete(Long id) {
+        Meal meal = mealRepository.findById(id)
+                                    .orElseThrow(MealNotFound::new);
+        if(meal.isOpened()) {
+            meal.delete();
+        }
+        else {
+            throw new InvalidMealException(CustomValidation.INVALID_MEAL_DELETE_STATUS);
+        }
+    }
 }

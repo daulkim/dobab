@@ -41,7 +41,7 @@ public class MealApiController {
         mealService.edit(id, mealEdit);
     }
 
-    @PatchMapping("/api/v1/meals/{mealId}/delete")
+    @DeleteMapping("/api/v1/meals/{mealId}")
     public void delete(@PathVariable(name="mealId") Long id) {
         mealService.delete(id);
     }

@@ -1,5 +1,7 @@
 package com.du.dobab.service;
 
+import com.du.dobab.domain.Category;
+import com.du.dobab.domain.Location;
 import com.du.dobab.domain.Meal;
 import com.du.dobab.domain.Party;
 import com.du.dobab.dto.MealStatus;
@@ -10,6 +12,7 @@ import com.du.dobab.dto.response.MealListResponse;
 import com.du.dobab.dto.response.MealResponse;
 import com.du.dobab.exception.InvalidMealException;
 import com.du.dobab.exception.MealNotFound;
+import com.du.dobab.repository.CategoryRepository;
 import com.du.dobab.repository.MealRepository;
 import com.du.dobab.repository.PartyRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -39,10 +42,14 @@ class MealServiceTest {
     @Autowired
     private PartyRepository partyRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @AfterEach
     public void clean() {
         partyRepository.deleteAll();
         mealRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     @Test
@@ -50,12 +57,17 @@ class MealServiceTest {
     public void save_succ() {
         String userId = "user";
         String content = "test 글입니다.";
+
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         MealSave mealSave = MealSave.builder()
                                     .userId(userId)
                                     .title("user test")
                                     .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(3)
                                     .contents(content)
+                                    .categoryId(category.getId())
                                     .build();
 
         mealService.save(mealSave);
@@ -78,6 +90,12 @@ class MealServiceTest {
                         .startDatetime(LocalDateTime.now().plusHours(1))
                         .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
+                        .location(Location.builder()
+                                            .siName("서울시")
+                                            .guName("강동구")
+                                            .dongName("천호동")
+                                            .build()
+                        )
                         .build();
         mealRepository.save(meal);
 
@@ -87,6 +105,9 @@ class MealServiceTest {
         assertEquals(savedMeal.getUserId(), userId);
         assertEquals(savedMeal.getMealTime(), 1);
         assertEquals(savedMeal.getContents(), content);
+        assertEquals(savedMeal.getLocation().getSiName(), "서울시");
+        assertEquals(savedMeal.getLocation().getGuName(), "강동구");
+        assertEquals(savedMeal.getLocation().getDongName(), "천호동");
     }
 
     @Test
@@ -108,8 +129,8 @@ class MealServiceTest {
         MealSearch mealSearch = MealSearch.builder()
                                             .build();
         List<MealListResponse> pageOne = mealService.findAll(mealSearch);
-        assertEquals(10, pageOne.size());
-        assertEquals(10, mealSearch.getSize());
+        assertEquals(12, pageOne.size());
+        assertEquals(12, mealSearch.getSize());
         assertEquals(1, mealSearch.getPage());
         assertEquals(0, mealSearch.getOffset());
         assertEquals("user 29", pageOne.get(0).getUserId());
@@ -193,7 +214,9 @@ class MealServiceTest {
     @Test
     @DisplayName("글 등록 실패 - 한 유저가 참여한 식사와 겹치는 시간의 식사 등록 요청")
     public void save_fail() {
-
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         Meal meal = Meal.builder()
                         .userId("user1")
                         .title("test title")
@@ -216,6 +239,7 @@ class MealServiceTest {
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
+                                    .categoryId(category.getId())
                                     .build();
 
         assertThrows(InvalidMealException.class, () -> {
@@ -227,7 +251,9 @@ class MealServiceTest {
     @Test
     @DisplayName("글 등록 성공 - 한 유저의 참여 식사와 등록 식사의 시간이 겹치지 않는 경우")
     public void save_succ2() {
-
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         Meal meal = Meal.builder()
                         .userId("user1")
                         .title("test title")
@@ -250,6 +276,7 @@ class MealServiceTest {
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(2))
                                     .mealTime(1)
+                                    .categoryId(category.getId())
                                     .build();
 
         mealService.save(mealSave);

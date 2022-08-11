@@ -1,10 +1,12 @@
 package com.du.dobab.controller;
 
+import com.du.dobab.domain.Category;
 import com.du.dobab.domain.Meal;
 import com.du.dobab.domain.Party;
 import com.du.dobab.dto.MealStatus;
 import com.du.dobab.dto.request.MealEdit;
 import com.du.dobab.dto.request.MealSave;
+import com.du.dobab.repository.CategoryRepository;
 import com.du.dobab.repository.MealRepository;
 import com.du.dobab.repository.PartyRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,22 +48,29 @@ class MealApiControllerTest {
     @Autowired
     private PartyRepository partyRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @AfterEach
     public void clean() {
         partyRepository.deleteAll();
         mealRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     @DisplayName("save 요청 시 파라미터 validation 실패")
     @Test
     public void save_fail() throws Exception {
-
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         MealSave mealSave = MealSave.builder()
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(0)
+                                    .categoryId(category.getId())
                                     .build();
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String requestJson = objectMapper.writeValueAsString(mealSave);
@@ -81,12 +90,16 @@ class MealApiControllerTest {
     @Test
     public void save_succ() throws Exception {
 
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         MealSave mealSave = MealSave.builder()
                                     .userId("user")
                                     .title("user test")
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
+                                    .categoryId(category.getId())
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String requestJson = objectMapper.writeValueAsString(mealSave);
@@ -103,16 +116,18 @@ class MealApiControllerTest {
     @Test
     public void get_succ() throws Exception {
 
-        MealSave mealSave = MealSave.builder()
-                                    .userId("user")
-                                    .title("user test")
-                                    .contents("테스트 글입니다.")
-                                    .startDatetime(LocalDateTime.now().plusHours(1))
-                                    .mealTime(1)
-                                    .build();
-        Meal savedMeal = mealRepository.save(mealSave.toEntity());
+        Meal meal = Meal.builder()
+                        .userId("user")
+                        .title("test title")
+                        .contents("테스트 글입니다.")
+                        .startDatetime(LocalDateTime.now().plusHours(1))
+                        .endDatetime(LocalDateTime.now().plusHours(2))
+                        .status(MealStatus.OPEN)
+                        .build();
 
-        mockMvc.perform(get("/api/v1/meals/{mealId}", savedMeal.getId())
+        mealRepository.save(meal);
+
+        mockMvc.perform(get("/api/v1/meals/{mealId}", meal.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -160,7 +175,6 @@ class MealApiControllerTest {
                         .endDatetime(LocalDateTime.now().plusHours(2))
                         .status(MealStatus.OPEN)
                         .build();
-
         mealRepository.save(meal);
 
         MealEdit mealEdit = MealEdit.builder()
@@ -228,7 +242,7 @@ class MealApiControllerTest {
 
     @DisplayName("save 요청 - 잘못된 식사시간")
     @Test
-    public void save_mealtime_exception() throws Exception {
+    public void save_fail2() throws Exception {
 
         MealSave mealSave = MealSave.builder()
                                     .userId("user")
@@ -254,8 +268,10 @@ class MealApiControllerTest {
     @Transactional
     @DisplayName("save 요청 실패- 한 유저가 참여한 식사와 겹치는 시간의 식사 등록 요청")
     @Test
-    public void save_fail2() throws Exception {
-
+    public void save_fail3() throws Exception {
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         Meal meal = Meal.builder()
                         .userId("user1")
                         .title("test title")
@@ -278,6 +294,7 @@ class MealApiControllerTest {
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(1))
                                     .mealTime(1)
+                                    .categoryId(category.getId())
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String requestJson = objectMapper.writeValueAsString(mealSave);
@@ -297,7 +314,9 @@ class MealApiControllerTest {
     @DisplayName("save 요청 성공- 한 유저가 참여한 식사와 겹치지 않는 시간의 식사 등록 요청")
     @Test
     public void my_meal_list_succ() throws Exception {
-
+        Category category = categoryRepository.save(Category.builder()
+                                                            .name("분식")
+                                                            .build());
         Meal meal = Meal.builder()
                         .userId("user1")
                         .title("test title")
@@ -320,6 +339,7 @@ class MealApiControllerTest {
                                     .contents("테스트 글입니다.")
                                     .startDatetime(LocalDateTime.now().plusHours(2))
                                     .mealTime(1)
+                                    .categoryId(category.getId())
                                     .build();
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String requestJson = objectMapper.writeValueAsString(mealSave);
@@ -345,7 +365,7 @@ class MealApiControllerTest {
                         .build();
         mealRepository.save(meal);
 
-        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId() + 1L))
+        mockMvc.perform(delete("/api/v1/meals/{mealId}", meal.getId() + 1L))
                         .andExpect(status().isNotFound())
                         .andExpect(jsonPath("$.code").value("404"))
                         .andExpect(jsonPath("$.message").value("존재하지 않는 글입니다."))
@@ -365,7 +385,7 @@ class MealApiControllerTest {
                         .build();
         mealRepository.save(meal);
 
-        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId()))
+        mockMvc.perform(delete("/api/v1/meals/{mealId}", meal.getId()))
                         .andExpect(status().isBadRequest())
                         .andExpect(jsonPath("$.code").value("400"))
                         .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
@@ -386,7 +406,7 @@ class MealApiControllerTest {
                         .build();
         mealRepository.save(meal);
 
-        mockMvc.perform(patch("/api/v1/meals/{mealId}/delete", meal.getId()))
+        mockMvc.perform(delete("/api/v1/meals/{mealId}", meal.getId()))
                         .andExpect(status().isOk())
                         .andDo(print());
     }

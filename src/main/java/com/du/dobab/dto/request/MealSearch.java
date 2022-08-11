@@ -16,7 +16,7 @@ public class MealSearch {
     private Integer page = 1;
 
     @Builder.Default
-    private Integer size = 10;
+    private Integer size = 12;
 
     public long getOffset() {
         return (long) (max(1, this.page) - 1) * min(this.size, MAX_SIZE);

@@ -36,17 +36,22 @@ public class MealSave {
 
     @Min(value = 1, message = "소요시간은 한 시간 이상이어야 합니다.")
     private int mealTime;
+    
+    @Min(value = 1L, message = "카테고리를 선택해주세요.")
+    private Long categoryId;
 
     @Builder
     public MealSave(String userId, String title,
                     String contents, Location location,
-                    LocalDateTime startDatetime, int mealTime) {
+                    LocalDateTime startDatetime, int mealTime,
+                    Long categoryId) {
         this.userId = userId;
         this.title = title;
         this.contents = contents;
         this.location = location;
         this.startDatetime = startDatetime;
         this.mealTime = mealTime;
+        this.categoryId = categoryId;
     }
 
     public Meal toEntity() {

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity @Table(name = "MEAL")
@@ -44,6 +43,10 @@ public class Meal {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "party_id")
     private Party party;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="category_id")
+    private Category category;
 
     public Meal(Long id) {
         this.id = id;
@@ -87,5 +90,9 @@ public class Meal {
 
     public void delete() {
         this.status = MealStatus.DELETE;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

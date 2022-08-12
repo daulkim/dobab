@@ -20,12 +20,12 @@ public class MealResponse {
     private String categoryName;
 
     public MealResponse(Meal entity) {
-        this.id = id;
+        this.id = entity.getId();
         this.userId = entity.getUserId();
         this.location = entity.getLocation();
         this.startDatetime = entity.getStartDatetime();
         this.mealTime = (int) ChronoUnit.HOURS.between(entity.getStartDatetime(), entity.getEndDatetime());
-        this.title = title;
+        this.title = entity.getTitle();
         this.contents = entity.getContents();
         this.categoryName = entity.getCategory().getName();
     }

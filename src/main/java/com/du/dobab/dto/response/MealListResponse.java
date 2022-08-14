@@ -2,7 +2,6 @@ package com.du.dobab.dto.response;
 
 import com.du.dobab.domain.Location;
 import com.du.dobab.domain.Meal;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,8 +13,6 @@ public class MealListResponse {
     private Long id;
     private String title;
     private String userId;
-
-    @JsonFormat(pattern = "HH:mm")
     private LocalDateTime startDatetime;
     private int mealTime;
     private Location location;
